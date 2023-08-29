@@ -1,1 +1,6 @@
-
+---
+title: "Pertemuan 1 - "
+author: "Farhan Abdillah Harahap"
+date: "2023-08-28"
+output: html_document
+---
