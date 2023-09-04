@@ -41,7 +41,7 @@ summary(data1.ts)
 ```
 
 ```{r}
-ts.plot(data1.ts, xlab="Time Period ", ylab="Reading", 
+ts.plot(data1.ts, xlab="Time Period ", ylab="", 
         main = "Time Series Plot")
 points(data1.ts)
 ```
@@ -107,7 +107,7 @@ data.gab #forecast 73 periode ke depan
 Adapun plot data deret waktu dari hasil peramalan yang dilakukan adalah sebagai berikut.
 
 ```{r}
-ts.plot(data1.ts, xlab="Time Period ", ylab="Sales", main= "SMA N=12 World CO2 Emmisions")
+ts.plot(data1.ts, xlab="Time Period ", ylab="", main= "SMA N=12 World CO2 Emmisions")
 points(data1.ts)
 lines(data.gab[,2],col="green",lwd=2)
 lines(data.gab[,3],col="red",lwd=2)
@@ -160,7 +160,7 @@ data.gab2<-cbind(aktual=c(train.ts,rep(NA,73)),pemulusan=c(data.sma2,rep(NA,73))
 Adapun plot data deret waktu dari hasil peramalan yang dilakukan adalah sebagai berikut.
 
 ```{r}
-ts.plot(data1.ts, xlab="Time Period ", ylab="Sales", main= "SMA N=3 World CO2 Emmisions")
+ts.plot(data1.ts, xlab="Time Period ", ylab="", main= "SMA N=3 World CO2 Emmisions")
 points(data1.ts)
 lines(data.gab2[,2],col="green",lwd=2)
 lines(data.gab2[,3],col="red",lwd=2)
@@ -289,7 +289,7 @@ data.gab3
 Hasil pemulusan menggunakan metode DMA divisualisasikan sebagai berikut
 
 ```{r}
-ts.plot(data1.ts, xlab="Time Period ", ylab="Sales", main= "DMA N=12 World CO2 Emmisions by Industry")
+ts.plot(data1.ts, xlab="Time Period ", ylab="", main= "DMA N=12 World CO2 Emmisions by Industry")
 points(data1.ts)
 lines(data.gab3[,3],col="green",lwd=2)
 lines(data.gab3[,6],col="red",lwd=2)
