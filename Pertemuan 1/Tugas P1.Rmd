@@ -407,16 +407,6 @@ test.ts <- ts(testing$value)
 
 
 ###SES
-```{r}
-#Cara 1 (fungsi ses)
-ses.1 <- ses(train.ts, h = 10, alpha = 0.2)
-plot(ses.1)
-ses.1
-
-ses.2<- ses(train.ts, h = 10, alpha = 0.7)
-plot(ses.2)
-ses.2
-```
 
 ```{r}
 autoplot(ses.1) +
