@@ -1,0 +1,221 @@
+---
+title: "Tugas P2 MPDW"
+author: "Farhan Abdillah Harahap"
+output: html_document
+date: "2023-09-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Library
+```{r}
+library(dplyr)
+library(TTR)
+library(lmtest) # uji-Durbin Watson
+library(orcutt) # Cochrane-Orcutt
+library(HoRM) # Hildreth Lu
+library(corrplot)
+library(knitr)
+library(ggplot2)
+library(rio)
+library(olsrr)
+```
+
+##Penjelasan Data
+Data "Wind Power Forecasting" dapat diakses melalui https://www.kaggle.com/datasets/theforcecoder/wind-power-forecasting. Data ini berisi berbagai fitur cuaca, turbin dan rotor. Data dicatat dari Januari 2018 hingga Maret 2020. Pembacaan dicatat dengan interval 10 menit. Berikut adalah informasi data yang digunakan pada penelitian ini:
+```{r}
+data <- data.frame(
+  Kode = c("Y", "X1", "X2", "X3", "X4", "X5", "X6"),
+  Variabel = c("ActivePower", "AmbientTemperature", "BearingShaftTemperature",
+                "GearboxBearingTemperature", "GeneratorRPM", "MainBoxTemperature",
+                "ReactivePower")
+)
+
+data
+```
+
+##Eksplorasi Data
+###Import Data
+```{r}
+data<- import("https://raw.githubusercontent.com/farhanabdillahh/PraktikumMPDW/main/Pertemuan%202/datasetmpdwpert2.csv") 
+data <- data %>% slice(1:100) #Fokus mengambil 100 periode teratas 
+str(data)
+```
+###Plot Korelasi
+```{r}
+# Menghasilkan plot ggpairs
+plot <- ggpairs(data[sapply(data, is.numeric)])
+
+# Mengatur ukuran font pada semua elemen
+plot <- plot + theme(
+  axis.text = element_text(size = 5),
+  axis.title = element_text(size = 5),
+  legend.text = element_text(size = 5)
+)
+
+# Tampilkan gambar
+print(plot)
+```
+Terdapat Korelasi yang tinggi antara Peubah Y (Active Power) dan X4 (GeneratorPRM)
+
+##Regresi Global
+###Model Regresi OLS
+```{r}
+#Pembuatan Model Regresi
+model<- lm(Y ~ X1 + X2 + X3 + X4 + X5 + X6 , data = data)
+summary(model)
+```
+Model regresi global menjelaskan bahwa terdapat 4 peubah  yang berpengaruh signifikan terhadap peubah respon, yaitu Ambient Temperature (X1), Bearing Shaft Temperature (X2), GeneratorPRM (X4), dan Main Box Temperature (X5) dengan Koefisien Determinasi sebesar 97.21%. 
+
+###Model Regresi Terbaik 
+```{r}
+bestsubset <- ols_step_best_subset(model)
+bestsubset
+```
+Model terbaik dengan kriteria AIC adalah model dengan peubah bebas X1, X2, X4, dan X5
+```{r}
+modelbest<- lm(Y ~ X1 + X2 + X4 + X5 , data = data)
+summary(modelbest)
+```
+##Pemeriksaan Asumsi Autokorelasi
+###Uji Eksploratif
+```{r}
+residual <- residuals(modelbest)
+
+plot(residual, type="o", 
+     ylab = "Sisaan", xlab = "Order", main = "Sisaan vs Order")
+abline(h = 0, col='red')
+```
+Secara eksploratif, plot Sisaan vs Order memperlihatkan pola naik turun yang mengindikasikan keberadaan autokorelasi. 
+
+###Uji ACF dan PACF
+```{r}
+acf(residual)
+```
+```{r}
+pacf(residual)
+```
+Menurut Plot ACF dan PACF, tidak terdapat garis vertikal pada paubah Lag yang melebihi garis horizontal berwarna biru. Artinya, mengindikasikan tak terdapat autokorelasi dalam model. 
+
+###Uji Formal: Durbin Watson
+H0: Tidak ada autokorelasi
+H1: Ada autokorelasi
+```{r}
+lmtest::dwtest(modelbest, alternative = 'two.sided')
+```
+p-value < 0.05. Maka, Tolak H0. Berarti, terdapat autokorelasi dalam model. 
+
+##Penanganan Autokorelasi
+###Metode Cochrane-Orcutt
+```{r}
+#Penanganan Autokorelasi Cochrane-Orcutt
+modelCO<-cochrane.orcutt(modelbest)
+modelCO
+```
+Berdasarkan metode Cochrane-Orcutt, nilai $p-value$ dari durbin-watson statistics meningkat menjadi $0.9882$. Artinya, belum cukup bukti menyatakan bahwa sisaan terdapat autokorelasi pada taraf nyata 5%. Untuk nilai $ρ ̂$ optimum yang digunakan adalah $-0.274637$
+
+Selanjutnya akan dilakukan transformasi secara manual dengan syntax berikut ini.
+```{r}
+#Rho optimum
+rho<- modelCO$rho
+rho
+```
+
+```{r}
+#Transformasi Manual
+Y.trans<- data$Y[-1]-data$Y[-100]*rho
+X1.trans<- data$X1[-1]-data$X1[-100]*rho
+X2.trans<- data$X2[-1]-data$X2[-100]*rho
+X4.trans<- data$X4[-1]-data$X4[-100]*rho
+X5.trans<- data$X5[-1]-data$X5[-100]*rho
+
+modelCOmanual<- lm(Y.trans ~ X1.trans + X2.trans + X4.trans + X5.trans)
+summary(modelCOmanual)
+```
+Hasil model transformasi bukan merupakan model sesungguhnya. Koefisien regresi masih perlu dicari kembali.
+```{r}
+#Mencari Penduga Koefisien Regresi setelah Transformasi ke Persamaan Awal
+b0bintang <- modelCOmanual$coefficients[-(2:5)]
+b0 <- b0bintang/(1-rho)
+b1 <- modelCOmanual$coefficients[-1]
+b0
+b1
+```
+Hasil perhitungan koefisien regresi tersebut akan menghasilkan hasil yang sama dengan model yang dihasilkan menggunakan *packages*. Selanjutnya dilakukan pemeriksaan autokorelasi kembali.
+```{r}
+lmtest::dwtest(modelCO, alternative = 'two.sided')
+```
+p-value > 0.05. Artinya Tak Tolak H0. Maka, belum cukup bukti menyatakan bahwa ada autokorelasi dalam model. Oleh karena itu, masalah autokorelasi terselesaikan menggunakan metode ini
+
+###Metode Hildreth-Lu
+Penanganan kedua adalah menggunakan metode Hildreth-Lu. Metode ini akan mencari nilai SSE terkecil dan dapat dicari secara manual maupun menggunakan packages. Jika menggunakan packages, gunakan `library` *packages* `HORM`.
+Berikut adalah function Hildreth Lu untuk 4 variabel yang digunakan.
+```{r}
+#Penanganan Autokorelasi Hildreth lu
+# Hildreth-Lu
+hildreth.lu.func.multi<- function(r, modelbest){
+  x <- model.matrix(modelbest)[,-1]
+  y <- model.response(model.frame(modelbest))
+  n <- length(y)
+  t <- 2:n
+  y <- y[t]-r*y[t-1]
+  
+  # Modifikasi untuk beberapa variabel bebas
+  x1 <- x[,1][t]-r*x[,1][t-1]
+  x2 <- x[,2][t]-r*x[,2][t-1]
+  x4 <- x[,3][t]-r*x[,3][t-1]
+  x5 <- x[,4][t]-r*x[,4][t-1]
+  
+  return(lm(y~x1+x2+x4+x5))
+}
+
+# Pencarian rho yang meminimumkan SSE
+r <- c(seq(0.1,0.9, by= 0.1))
+tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func.multi(i, model))}))
+round(tab, 4)
+
+```
+Berdasarkan iterasi rho dari rentang 0.1 sampai 0.9 dengan looping sebesar 0.1 didapatkan rho teroptimum adalah rho = 0.1 dengan SSE terkecil. Supaya rho yang didapatkan lebih teliti selanjutnya dilakukan iterasi kembali dari 0 sampai 0.2 dengan looping sebesar 0.001
+```{r}
+#Rho optimal di sekitar 0.1
+rOpt <- seq(0,0.2, by= 0.00001)
+tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func.multi(i, model))}))
+head(tabOpt[order(tabOpt$SSE),])
+
+#Grafik SSE optimum
+par(mfrow = c(1,1))
+plot(tab$SSE ~ tab$rho , type = "l", xlab = "Rho", ylab = "SSE")
+abline(v = tabOpt[tabOpt$SSE==min(tabOpt$SSE),"rho"], lty = 2, col="red",lwd=2)
+```
+rho teroptimum adalah 0.000. Hal ini mengartikan bahwa Metode Hildreth-Lu kurang tepat untuk mengatasi autokorelasi pada kasus ini, dan dengan rho optimum menghasilkan output yang mirip dengan model regresi linier metode OLS (hanya berbeda sedikit saja, metode Hildreth Lu mengamati observasi 2:n)
+```{r}
+#Model terbaik
+modelHL <- hildreth.lu.func.multi(0, modelbest)
+summary(modelHL)
+```
+Output diatas mirip dengan model regresi terbaik dengan metode OLS.
+```{r}
+#Deteksi autokorelasi
+dwtest(modelHL, , alternative = 'two.sided')
+```
+Begitu juga jika dilakukan uji autokorelasi menghasilkan hasil yang sama, tidak mengatasi masalah autokorelasi. Selanjutnya perbandingan kebaikan model.
+```{r}
+#Perbandingan
+sseModelawal <- anova(modelbest)$`Sum Sq`[-(1:4)]
+sseModelCO <- anova(modelCOmanual)$`Sum Sq`[-(1:4)]
+sseModelHL <- anova(modelHL)$`Sum Sq`[-(1:4)]
+mseModelawal <- sseModelawal/length(data$Y)
+mseModelCO <- sseModelCO/length(data$Y)
+mseModelHL <- sseModelHL/length(data$Y)
+akurasi <- matrix(c(sseModelawal,sseModelCO,sseModelHL,
+                    mseModelawal,mseModelCO,mseModelHL),nrow=2,ncol=3,byrow = T)
+colnames(akurasi) <- c("Model Awal", "Model Cochrane-Orcutt", "Model Hildreth-Lu")
+row.names(akurasi) <- c("SSE","MSE")
+akurasi
+kable(akurasi)
+```
+Berdasarkan hasil diatas, metode Cochrane-Orcutt memiliki SEE yang lebih kecil dibandingkan dengan OLS dan Hildreth-Lu. Pada kasus ini, metode Hildreth-Lu kurang efektif digunakan karena hanya menurunkan SSE yang sangat kecil mengingat rho yang digunakan dan teroptimum adalah 0. 
+
+
