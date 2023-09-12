@@ -21,6 +21,7 @@ library(knitr)
 library(ggplot2)
 library(rio)
 library(olsrr)
+library(GGally)
 ```
 
 ##Penjelasan Data
@@ -74,7 +75,7 @@ Model regresi global menjelaskan bahwa terdapat 4 peubah  yang berpengaruh signi
 bestsubset <- ols_step_best_subset(model)
 bestsubset
 ```
-Model terbaik dengan kriteria AIC adalah model dengan peubah bebas X1, X2, X4, dan X5
+Model terbaik dengan kriteria AIC terkecil adalah model dengan peubah bebas X1, X2, X4, dan X5
 ```{r}
 modelbest<- lm(Y ~ X1 + X2 + X4 + X5 , data = data)
 summary(modelbest)
@@ -180,7 +181,7 @@ round(tab, 4)
 Berdasarkan iterasi rho dari rentang 0.1 sampai 0.9 dengan looping sebesar 0.1 didapatkan rho teroptimum adalah rho = 0.1 dengan SSE terkecil. Supaya rho yang didapatkan lebih teliti selanjutnya dilakukan iterasi kembali dari 0 sampai 0.2 dengan looping sebesar 0.001
 ```{r}
 #Rho optimal di sekitar 0.1
-rOpt <- seq(0,0.2, by= 0.00001)
+rOpt <- seq(0,0.2, by= 0.001)
 tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func.multi(i, model))}))
 head(tabOpt[order(tabOpt$SSE),])
 
