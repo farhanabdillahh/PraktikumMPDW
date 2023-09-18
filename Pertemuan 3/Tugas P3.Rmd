@@ -220,7 +220,7 @@ fore.ardl <- forecast(model = model.ardl, x=test$Xt, h=132)
 fore.ardl
 ```
 
-Data di atas merupakan hasil peramalan untuk 5 periode ke depan menggunakan Model Autoregressive dengan $p=1$ dan $q=1$.
+Data di atas merupakan hasil peramalan untuk 132 periode ke depan menggunakan Model Autoregressive dengan $p=1$ dan $q=1$.
 
 ```{r}
 mape.ardl <- MAPE(fore.ardl$forecasts, test$Yt)
