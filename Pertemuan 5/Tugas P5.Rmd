@@ -1,5 +1,5 @@
 ---
-title: "Data Tidak Stasioner"
+title: "Pemeriksaan Kestasioneran Data"
 output:
   html_document: default
   pdf_document: default
