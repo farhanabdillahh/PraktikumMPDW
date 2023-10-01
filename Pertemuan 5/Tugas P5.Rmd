@@ -1,5 +1,5 @@
 ---
-title: "Pemeriksaan Kestasioneran Data"
+title: "Pemeriksaan Stasioneritas Data"
 output:
   html_document: default
   pdf_document: default
@@ -60,7 +60,7 @@ Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil da
 
 ```{r}
 index <- seq(1:365)
-bc = boxcox(stas~index, lambda = seq(0,4,by=0.01))
+bc = boxcox(stas~index, lambda = seq(-5,5,by=0.01))
 ```
 ```{r}
 #Nilai Rounded Lambda
@@ -72,7 +72,7 @@ lambda
 bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
 ```
 
-Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **1,01** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0,00** dan batas atas **2,63**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **1,01** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0,00** dan batas atas **2,63**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data  stasioner dalam ragam.
 
 ### Partisi Data
 
@@ -121,7 +121,7 @@ Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.3213 yang lebih besar 
 
 ```{r}
 index <- seq(1:88)
-bc = boxcox(dt_stas1~index, lambda = seq(-2,6,by=1))
+bc = boxcox(dt_stas1~index, lambda = seq(-5,5,by=1))
 #Nilai Rounded Lambda
 lambda <- bc$x[which.max(bc$y)]
 lambda
@@ -174,7 +174,7 @@ Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.4059 yang lebih besar 
 
 ```{r}
 index <- seq(1:270)
-bc = boxcox(dt_stas2~index, lambda = seq(-3,6,by=1))
+bc = boxcox(dt_stas2~index, lambda = seq(-5,5,by=1))
 #Nilai Rounded Lambda
 lambda <- bc$x[which.max(bc$y)]
 lambda
