@@ -25,7 +25,6 @@ set.seed(007)
 
 ```{r}
 stas <- data<- rio::import("https://raw.githubusercontent.com/farhanabdillahh/PraktikumMPDW/main/data/datasetmpdw.csv")
-stas
 stas <- ts(data$value)
 ```
 
@@ -38,7 +37,7 @@ plot_stas <- ts.plot(stas, xlab="Time Period ", ylab="",
 points(stas)
 ```
 
-Plot deret waktu di atas menunjukkan bahwa data cenderung membuat grafik tren, dan tidak stasioner dalam rataan.
+Plot deret waktu di atas menunjukkan bahwa data cenderung membuat grafik stasioner. Pada beberapa titik, data cenderung membuat tren. Untuk membuktikan data stasioner atau tidak, diperlukan pengujian lebih lanjut.
 
 ### Plot ACF
 
@@ -46,7 +45,7 @@ Plot deret waktu di atas menunjukkan bahwa data cenderung membuat grafik tren, d
 acf(stas)
 ```
 
-Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off*. Berarti, mengindikasikan tidak stasioner.
+Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung **cut off**. Berarti, mengindikasikan stasioner.
 
 ### Uji ADF
 
@@ -58,7 +57,7 @@ $H_0$ : Data tidak stasioner dalam rataan
 
 $H_1$ : Data stasioner dalam rataan
 
-Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan pada lag ke-7. Hal ini tidak sesuai dengan hasil eksplorasi data. Pada plot ACF nampak grafik yang tails off, dan tidak dapat disimpulkan data stasioner. Karena uji formal menunjukkan data stasioner dalam rataan. Maka, kesimpulan yang digunakan adalah data stasioner dalam rataan.
+Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan pada lag ke-7. Pada plot ACF nampak grafik yang cuts off. Maka, kesimpulan yang digunakan adalah data stasioner dalam rataan.
 
 ### Plot Box-Cox
 
