@@ -1,9 +1,13 @@
 ---
-title: "Pemeriksaan Stasioneritas Data"
-output:
-  html_document: default
+title: "Pemeriksaan Kestasioneritasan Data"
+author: Farhan Abdillah Harahap (G1401211007)
+output: 
+  html_document:
+    theme: yeti
+    toc: true
+    toc_float: true
+  word_document: default
   pdf_document: default
-date: "2023-09-23"
 ---
 
 ```{r}
@@ -72,7 +76,7 @@ lambda
 bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
 ```
 
-Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **1,01** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0,00** dan batas atas **2,63**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data  stasioner dalam ragam.
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **1,01** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-0,61** dan batas atas **2,63**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data  stasioner dalam ragam.
 
 ### Partisi Data
 
@@ -129,7 +133,7 @@ lambda
 bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
 ```
 
-Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-0.8686869** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-2,00** dan batas atas **2,20**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data stasioner dalam ragam.
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-0.8585859** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-3.88888889** dan batas atas **2.17171717**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data stasioner dalam ragam.
 
 #### Bagian 2
 
@@ -161,7 +165,7 @@ Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung tails
 #### Uji ADF
 
 ```{r}
-adf.test(dt_stas2)
+tseries::adf.test(dt_stas2)
 ```
 
 $H_0$ : Data tidak stasioner dalam rataan
@@ -182,6 +186,6 @@ lambda
 bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
 ```
 
-Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-0.4545455** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-2.09090909** dan batas atas **1.27272727**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **-0.4545455** dan pada selang kepercayaan 95% nilai memiliki batas bawah **-2.07070707** dan batas atas **1.26262626**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
 
 Didapatkan bahwa data tidak stasioner dalam rataan, dan stasioner dalam ragam.
