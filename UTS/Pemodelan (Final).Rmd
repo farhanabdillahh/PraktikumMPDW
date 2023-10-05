@@ -1,17 +1,12 @@
 ---
-title: "Tugas Mandiri Pengantar Model Linear 2"
+title: "Pemodelan MPDW"
 author: Farhan Abdillah Harahap (G1401211007)
-output: 
-  html_document:
-    theme: yeti
-    toc: true
-    toc_float: true
-  word_document: default
+output:
+  html_document: default
   pdf_document: default
-editor_options: 
-  markdown: 
-    wrap: 72
+  word_document: default
 ---
+
 ## Packages
 
 ```{r}
