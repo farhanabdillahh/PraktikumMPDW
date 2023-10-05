@@ -1,11 +1,12 @@
 ---
-title: "Pemodelan MPDW"
+title: "Pemodelan"
 author: Farhan Abdillah Harahap (G1401211007)
 output:
   html_document: default
   pdf_document: default
   word_document: default
 ---
+
 
 ## Packages
 
@@ -73,7 +74,7 @@ acf(ma2.train, main="ACF", lag.max=20)
 Berdasarkan plot ACF di atas, dapat dilihat bahwa plot *cuts off* pada *lag* ke-2. Hal ini sesuai dengan proses pembangkitan model MA(2).
 
 ```{r}
-adf.test(ma2.train) 
+tseries::adf.test(ma2.train) 
 #stasioner
 ```
 
