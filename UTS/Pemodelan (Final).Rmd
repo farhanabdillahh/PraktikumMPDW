@@ -562,6 +562,18 @@ $H_1$ : nilai tengah sisaan tidak sama dengan 0
 
 Berdasarkan uji-ttersebut, didapat *p-value* sebesar 0.4866 yang lebih besar dari taraf nyata 5% sehingga tak tolak $H_0$ dan menandakan bahwa nilai tengah sisaan sama dengan nol. Hal ini berbeda dengan eksplorasi.
 
+### Overfitting
+```{r}
+model4a.da=Arima(train.diff, order=c(1,1,2),method="ML")
+summary(model4a.da) #AIC=4749.85 
+lmtest::coeftest(model4a.da) #ma1 signifikan
+
+model4b.da=Arima(train.diff, order=c(0,1,3),method="ML")
+summary(model4b.da) #AIC=4749.3
+lmtest::coeftest(model4b.da) #ma1 ma2 signifikan
+```
+Model ARIMA(2,1,0) sebelumnya memiliki AIC 4748.295 (lebih kecil). Oleh karena itu, model terbaiknya setelah overfitting adalah ARIMA(2,1,0).
+
 ### Peramalan
 
 Peramalan dilakukan menggunakan fungsi `forecast()` . Contoh peramalan berikut ini dilakukan untuk 30 hari ke depan.
