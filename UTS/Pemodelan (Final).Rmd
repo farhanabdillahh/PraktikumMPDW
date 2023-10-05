@@ -1,11 +1,17 @@
 ---
-title: "Pendugaan Parameter, Diagnostik Model, dan Peramalan"
-output:
-  html_document: default
+title: "Tugas Mandiri Pengantar Model Linear 2"
+author: Farhan Abdillah Harahap (G1401211007)
+output: 
+  html_document:
+    theme: yeti
+    toc: true
+    toc_float: true
+  word_document: default
   pdf_document: default
-date: "2023-09-30"
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
-
 ## Packages
 
 ```{r}
